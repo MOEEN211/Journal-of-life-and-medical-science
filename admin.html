@@ -635,6 +635,9 @@ document.getElementById('confirmRejectBtn').addEventListener('click', async () =
     }
   }
 
+  await loadSubmissions();
+});
+
 // Test Email Modal Handlers
 window.openTestEmailModal = function() {
   openModal('testEmailModal');
