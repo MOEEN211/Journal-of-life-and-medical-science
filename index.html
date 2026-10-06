@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title id="pageTitle">Journal of Life and Medical Science | International Open Access Journal</title>
+  
+  <!-- SEO & Academic Metadata -->
+  <meta name="description" id="metaDescription" content="Journal of Life and Medical Science (JLMS) is an international, peer-reviewed, open-access journal publishing high-impact clinical, biomedical, and translational life sciences research.">
+  <meta name="keywords" content="life science, medical journal, biomedical research, clinical medicine, open access, peer review, JLMS, epidemiology, translational research">
+  <meta name="author" id="metaAuthor" content="Institute for Excellence in Education and Research (IEER)">
+  <link rel="icon" type="image/jpeg" href="assets/journal-seal.jpg">
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Announcement Bar (Dynamic from Database) -->
+  <div class="top-announcement">
+    <div class="container announcement-inner">
+      <div class="issn-badges">
+        <span class="badge-tag"><i class="fa-solid fa-barcode"></i> ISSN (Online): <strong id="headerIssnOnline">3007-1607</strong></span>
+        <span class="badge-tag"><i class="fa-solid fa-book-open"></i> ISSN (Print): <strong id="headerIssnPrint">3007-1593</strong></span>
+        <span class="badge-tag"><i class="fa-solid fa-building-columns"></i> Publisher: <strong id="headerPublisher">IEER Global</strong></span>
+      </div>
+      <div class="top-links">
+        <a href="#about" class="top-link" data-nav="about">About</a>
+        <a href="#editorial" class="top-link" data-nav="editorial">Editorial Board</a>
+        <a href="#contact" class="top-link" data-nav="contact">Contact</a>
+        <button id="themeToggleBtn" class="top-link" style="background:none; cursor:pointer;" title="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Site Header -->
+  <header class="main-header">
+    <div class="container brand-wrapper">
+      <div class="brand-identity">
+        <img src="assets/journal-seal.jpg" alt="Journal of Life and Medical Science Seal" class="brand-emblem">
+        <div class="brand-text">
+          <h1 id="headerJournalTitle">Journal of <span>Life & Medical</span> Science</h1>
+          <p id="headerJournalTagline">International Peer-Reviewed Open Access Publication</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Auth Status Container (Dynamic: Toggles between Login/Register and Avatar/Name/Logout) -->
+        <div id="authStatusContainer">
+          <button class="btn btn-secondary btn-sm" id="openLoginBtn">
+            <i class="fa-solid fa-user-lock"></i> Sign In / Register
+          </button>
+        </div>
+        <button class="btn btn-primary btn-sm" id="headerSubmitBtn">
+          <i class="fa-solid fa-paper-plane"></i> <span class="btn-text">Submit Paper</span>
+        </button>
+        <!-- Mobile Hamburger Menu -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu" aria-expanded="false">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="main-nav">
+      <div class="container nav-container">
+        <ul class="nav-list" id="primaryNav">
+          <li class="nav-item">
+            <button class="nav-btn active" data-view="home"><i class="fa-solid fa-house"></i> Home</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn" data-view="issues"><i class="fa-solid fa-layer-group"></i> Current Issue</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn" data-view="archives"><i class="fa-solid fa-box-archive"></i> Archives</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn"><i class="fa-solid fa-circle-info"></i> About <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></button>
+            <div class="dropdown-menu">
+              <a href="#about" class="dropdown-item" data-view="about">About the Journal</a>
+              <a href="#aims" class="dropdown-item" data-view="aims">Aims & Scope</a>
+              <a href="#indexing" class="dropdown-item" data-view="indexing">Indexing & Abstracting</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn" data-view="editorial"><i class="fa-solid fa-users"></i> Editorial Team</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn"><i class="fa-solid fa-pen-nib"></i> For Authors <i class="fa-solid fa-chevron-down" style="font-size:0.7rem;"></i></button>
+            <div class="dropdown-menu">
+              <a href="#guidelines" class="dropdown-item" data-view="guidelines">Author Guidelines</a>
+              <a href="#charges" class="dropdown-item" data-view="charges">Publication Charges (APC)</a>
+              <a href="#submit" class="dropdown-item" data-view="submit">Online Submission</a>
+            </div>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn" data-view="policies"><i class="fa-solid fa-scale-balanced"></i> Ethics & Policies</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-btn" data-view="contact"><i class="fa-solid fa-envelope"></i> Contact</button>
+          </li>
+        </ul>
+
+        <div class="nav-cta">
+          <button class="btn btn-primary" id="quickSubmitBtn">
+            <i class="fa-solid fa-cloud-arrow-up"></i> Online Submission
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Nav Drawer -->
+      <div class="mobile-nav-drawer" id="mobileNavDrawer">
+        <div class="mobile-nav-inner">
+          <button class="mobile-nav-item" data-view="home"><i class="fa-solid fa-house"></i> Home</button>
+          <button class="mobile-nav-item" data-view="issues"><i class="fa-solid fa-layer-group"></i> Current Issue</button>
+          <button class="mobile-nav-item" data-view="archives"><i class="fa-solid fa-box-archive"></i> Archives</button>
+          <button class="mobile-nav-item" data-view="editorial"><i class="fa-solid fa-users"></i> Editorial Team</button>
+          <button class="mobile-nav-item" data-view="about"><i class="fa-solid fa-circle-info"></i> About the Journal</button>
+          <button class="mobile-nav-item" data-view="aims"><i class="fa-solid fa-crosshairs"></i> Aims &amp; Scope</button>
+          <button class="mobile-nav-item" data-view="guidelines"><i class="fa-solid fa-pen-nib"></i> Author Guidelines</button>
+          <button class="mobile-nav-item" data-view="charges"><i class="fa-solid fa-receipt"></i> Publication Charges</button>
+          <button class="mobile-nav-item" data-view="policies"><i class="fa-solid fa-scale-balanced"></i> Ethics &amp; Policies</button>
+          <button class="mobile-nav-item" data-view="contact"><i class="fa-solid fa-envelope"></i> Contact</button>
+          <button class="mobile-nav-item mobile-submit-btn" data-view="submit"><i class="fa-solid fa-cloud-arrow-up"></i> Submit Manuscript</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Hero Spotlight Section (Dynamic Data from Supabase) -->
+  <section class="hero-section" id="heroSection">
+    <img src="assets/hero-banner.jpg" alt="Biomedical Science Banner" class="hero-backdrop">
+    <div class="hero-gradient-overlay"></div>
+    
+    <div class="container hero-content">
+      <div class="hero-text-block">
+        <div class="hero-tag">
+          <i class="fa-solid fa-certificate"></i> Peer-Reviewed & Open Access (CC-BY 4.0)
+        </div>
+        <h2 class="hero-title" id="heroMainTitle">
+          <span id="heroTitlePrefix">Pioneering Discoveries in</span> <span id="heroTitleHighlight">Medicine & Public Health</span>
+        </h2>
+        <p class="hero-description" id="heroDescription">
+          An internationally recognized scholarly medium accelerating groundbreaking medical observations, epidemiologic analyses, and translational therapeutic interventions with rigorous double-blind peer review.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="hero-search-box">
+          <i class="fa-solid fa-magnifying-glass" style="color:#cbd5e1; margin-left:14px;"></i>
+          <input type="text" id="articleSearchInput" class="hero-search-input" placeholder="Search by title, author name, DOI, or medical keywords...">
+          <button class="btn btn-primary" id="searchSubmitBtn">Search</button>
+        </div>
+
+        <div style="display:flex; gap:16px; flex-wrap:wrap; font-size:0.84rem; color:#94a3b8;">
+          <span><i class="fa-solid fa-check-double" style="color:var(--gold-400);"></i> DOI Assigned (Crossref)</span>
+          <span><i class="fa-solid fa-check-double" style="color:var(--gold-400);"></i> Fast 24-Day First Decision</span>
+          <span><i class="fa-solid fa-check-double" style="color:var(--gold-400);"></i> Global Open Access</span>
+        </div>
+      </div>
+
+      <!-- Glassmorphic Metrics Card (Dynamic from Supabase) -->
+      <div class="hero-stats-card">
+        <div class="stats-card-header">
+          <h3>Journal Performance</h3>
+          <div class="stats-badge-live">
+            <span class="pulsing-dot"></span> Live Metrics
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <div class="stat-value gold" id="statImpactFactor">3.28</div>
+            <div class="stat-label">Impact Factor (JCR)</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statDecisionDays">24 Days</div>
+            <div class="stat-label">Time to First Decision</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value" id="statAcceptanceRate">21.4%</div>
+            <div class="stat-label">Acceptance Rate</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-value gold" id="statCiteScore">4.1</div>
+            <div class="stat-label">CiteScore Index</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Layout -->
+  <main class="site-content">
+    <div class="container content-grid">
+      
+      <!-- Primary Dynamic View Container -->
+      <div class="main-articles-area" id="mainViewContainer">
+        
+        <!-- Current Issue View (Default) -->
+        <div id="view-current-issue">
+          <div class="section-banner">
+            <div class="section-banner-title">
+              <div class="issue-meta-pill">
+                <i class="fa-regular fa-calendar-check"></i> Latest Published Issue
+              </div>
+              <h2 id="currentIssueTitle">Vol. 4 No. 7 (2026): Advances in Global Health & Translational Medicine</h2>
+              <p id="currentIssueDate"><i class="fa-regular fa-clock"></i> Published July 18, 2026 • Institute for Excellence in Education and Research (IEER)</p>
+            </div>
+            <div class="section-banner-actions">
+              <button class="btn btn-outline btn-sm" id="viewAllIssuesBtn">
+                <i class="fa-solid fa-folder-tree"></i> View Archive
+              </button>
+            </div>
+          </div>
+
+          <!-- Section Filter Tabs -->
+          <div class="filter-tabs" id="sectionFilterTabs">
+            <button class="tab-btn active" data-filter="all">All Articles (<span id="countAll">0</span>)</button>
+            <button class="tab-btn" data-filter="Original Research Articles">Original Research</button>
+            <button class="tab-btn" data-filter="Review Articles">Systematic Reviews</button>
+            <button class="tab-btn" data-filter="Clinical Case Reports">Case Reports</button>
+          </div>
+
+          <!-- Articles List Container -->
+          <div class="article-cards-list" id="articlesListContainer">
+            <div style="text-align:center; padding: 60px 0; color:var(--text-muted);">
+              <i class="fa-solid fa-spinner fa-spin fa-2x" style="color:var(--gold-500); margin-bottom:12px;"></i>
+              <p>Fetching peer-reviewed publications from Supabase database...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Archives View -->
+        <div id="view-archives" style="display:none;">
+          <div class="section-banner">
+            <div class="section-banner-title">
+              <h2>Journal Archives & Volume Repository</h2>
+              <p>Browse all historical volumes, archived numbers, and special thematic issues.</p>
+            </div>
+          </div>
+          <div class="archives-grid" id="archivesListContainer" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:24px;">
+            <!-- Rendered dynamically from Supabase issues table -->
+          </div>
+        </div>
+
+        <!-- Editorial Board View -->
+        <div id="view-editorial" style="display:none;">
+          <div class="section-banner">
+            <div class="section-banner-title">
+              <h2>Editorial Board & Advisory Council</h2>
+              <p>Distinguished international scholars, clinician-scientists, and peer-review authorities.</p>
+            </div>
+          </div>
+          <div class="editorial-directory" id="editorialContainer">
+            <!-- Dynamically populated from Supabase editorial_members table -->
+          </div>
+        </div>
+
+        <!-- Author Guidelines & Submission View -->
+        <div id="view-submission-portal" style="display:none;">
+          <div class="section-banner">
+            <div class="section-banner-title">
+              <h2>Online Manuscript Submission Portal</h2>
+              <p>Submit your original research for expedited, double-blind peer review.</p>
+            </div>
+          </div>
+          
+          <div class="submission-form-card" style="background:var(--bg-surface); padding:32px; border-radius:var(--radius-xl); border:1px solid var(--border-light); box-shadow:var(--card-shadow);">
+            <form id="manuscriptSubmitForm">
+              <h3 style="font-family:var(--font-serif); font-size:1.3rem; margin-bottom:20px; color:var(--gold-600);">
+                <i class="fa-solid fa-file-invoice"></i> 1. Manuscript Metadata
+              </h3>
+              
+              <div class="form-group">
+                <label class="form-label">Manuscript Full Title *</label>
+                <input type="text" id="subTitle" class="form-input" placeholder="e.g. Assessment of Malnutrition and Its Association With Appetite..." required>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                  <label class="form-label">Article Section / Category *</label>
+                  <select id="subSection" class="form-input" required>
+                    <option value="Original Research Articles">Original Research Article</option>
+                    <option value="Review Articles">Systematic Review & Meta-Analysis</option>
+                    <option value="Clinical Case Reports">Clinical Case Report</option>
+                    <option value="Short Communications & Editorials">Short Communication</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Keywords (Comma-separated) *</label>
+                  <input type="text" id="subKeywords" class="form-input" placeholder="e.g. Gestational Health, Sarcopenia, LMIC" required>
+                </div>
+              </div>
+
+              <h3 style="font-family:var(--font-serif); font-size:1.3rem; margin:28px 0 20px; color:var(--gold-600);">
+                <i class="fa-solid fa-user-doctor"></i> 2. Corresponding Author Information
+              </h3>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                  <label class="form-label">Author Full Name *</label>
+                  <input type="text" id="subAuthorName" class="form-input" placeholder="e.g. Dr. Sarah Jenkins, MD" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Author Email Address *</label>
+                  <input type="email" id="subAuthorEmail" class="form-input" placeholder="e.g. author@university.edu" required>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Institutional Affiliation & Department *</label>
+                <input type="text" id="subAffiliation" class="form-input" placeholder="e.g. Department of Obstetrics, Central Teaching Hospital" required>
+              </div>
+
+              <h3 style="font-family:var(--font-serif); font-size:1.3rem; margin:28px 0 20px; color:var(--gold-600);">
+                <i class="fa-solid fa-align-left"></i> 3. Structured Abstract
+              </h3>
+
+              <div class="form-group">
+                <label class="form-label">Abstract (Background, Objective, Method, Results, Conclusion) *</label>
+                <textarea id="subAbstract" class="form-input" rows="7" placeholder="Background: ...&#10;Objective: ...&#10;Method: ...&#10;Results: ...&#10;Conclusion: ..." required></textarea>
+              </div>
+
+              <h3 style="font-family:var(--font-serif); font-size:1.3rem; margin:28px 0 20px; color:var(--gold-600);">
+                <i class="fa-solid fa-file-pdf"></i> 4. Manuscript File & Compliance
+              </h3>
+
+              <div class="form-group">
+                <label class="form-label">Upload Manuscript (PDF or DOCX file)</label>
+                <input type="file" id="subFile" class="form-input" accept=".pdf,.doc,.docx">
+                <small style="color:var(--text-muted); display:block; margin-top:4px;">Max file size: 25MB. Supplementary figures and tables may be compressed.</small>
+              </div>
+
+              <div style="margin:20px 0; background:var(--bg-primary); padding:16px; border-radius:var(--radius-md); border:1px solid var(--border-light);">
+                <label style="display:flex; align-items:flex-start; gap:10px; font-size:0.86rem; cursor:pointer;">
+                  <input type="checkbox" id="subAgreement" required style="margin-top:4px;">
+                  <span>I confirm that this manuscript represents original investigation, has not been published elsewhere, adheres to Helsinki Declaration ethical guidelines, and all co-authors have approved this submission.</span>
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary" id="submitManuscriptBtn" style="width:100%; padding:14px; font-size:1.05rem;">
+                <i class="fa-solid fa-paper-plane"></i> Submit Manuscript to Supabase
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Policies & Ethics View -->
+        <div id="view-policies" style="display:none;">
+          <div class="section-banner">
+            <div class="section-banner-title">
+              <h2>Publishing Ethics, Retraction & Open Access Policies</h2>
+              <p>Adherence to COPE (Committee on Publication Ethics) and ICMJE standards.</p>
+            </div>
+          </div>
+          <div id="policiesContentArea">
+            <!-- Dynamically populated from Supabase journal_policies table -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Academic Sidebar (Dynamic Data from Supabase) -->
+      <aside class="sidebar">
+        
+        <!-- Submission Widget -->
+        <div class="sidebar-widget submission-widget-card">
+          <i class="fa-solid fa-feather-pointed" style="font-size:2.2rem; color:var(--gold-400); margin-bottom:12px;"></i>
+          <h3>Submit Your Manuscript</h3>
+          <p>We welcome high-caliber empirical research, systematic syntheses, and observational cohort studies in all health disciplines.</p>
+          <button class="btn btn-primary" id="sidebarSubmitBtn" style="width:100%;">
+            <i class="fa-solid fa-arrow-right"></i> Author Submission Portal
+          </button>
+        </div>
+
+        <!-- Dynamic Indexing & Databases from Supabase -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">
+            <span>Indexing & Databases</span>
+            <i class="fa-solid fa-award" style="color:var(--gold-500);"></i>
+          </h3>
+          <div class="indexing-list" id="sidebarIndexingList">
+            <!-- Dynamically loaded from Supabase journal_indexing -->
+          </div>
+        </div>
+
+        <!-- Journal Information -->
+        <div class="sidebar-widget">
+          <h3 class="widget-title">
+            <span>Journal Information</span>
+            <i class="fa-solid fa-circle-info" style="color:var(--gold-500);"></i>
+          </h3>
+          <ul class="info-nav-list">
+            <li class="info-nav-item">
+              <a href="#readers" data-view="guidelines">
+                <span><i class="fa-solid fa-book-reader"></i> For Readers</span>
+                <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
+              </a>
+            </li>
+            <li class="info-nav-item">
+              <a href="#authors" data-view="guidelines">
+                <span><i class="fa-solid fa-user-pen"></i> For Authors & Guidelines</span>
+                <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
+              </a>
+            </li>
+            <li class="info-nav-item">
+              <a href="#librarians" data-view="guidelines">
+                <span><i class="fa-solid fa-landmark"></i> For Librarians & Catalogs</span>
+                <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
+              </a>
+            </li>
+            <li class="info-nav-item">
+              <a href="#apc" data-view="charges">
+                <span><i class="fa-solid fa-hand-holding-dollar"></i> Article Processing Fees</span>
+                <i class="fa-solid fa-chevron-right" style="font-size:0.75rem;"></i>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Open Access Declaration -->
+        <div class="sidebar-widget" style="text-align:center; background:rgba(212, 163, 75, 0.05); border-color:var(--gold-400);">
+          <i class="fa-brands fa-creative-commons" style="font-size:2.4rem; color:var(--gold-600); margin-bottom:8px;"></i>
+          <h4 style="font-family:var(--font-serif); font-size:1.05rem; margin-bottom:6px;">Open Access License</h4>
+          <p style="font-size:0.8rem; color:var(--text-secondary); line-height:1.5;">
+            Articles are distributed under the Creative Commons Attribution 4.0 International (CC BY 4.0) License, allowing unrestricted dissemination and citation.
+          </p>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- Full Article Reader Modal -->
+  <div class="modal-overlay" id="articleReaderModal">
+    <div class="modal-content" style="max-width:920px;">
+      <div class="modal-header">
+        <div>
+          <span id="modalIssueBreadcrumb" style="font-size:0.8rem; color:var(--gold-600); font-weight:700; text-transform:uppercase;"></span>
+          <h3 id="modalArticleTitle" style="font-size:1.35rem; line-height:1.35; margin-top:4px;"></h3>
+        </div>
+        <button class="modal-close-btn" id="closeArticleModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <div id="modalAuthorsBlock" style="margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border-light);"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; background:var(--bg-primary); padding:10px 16px; border-radius:var(--radius-sm); border:1px solid var(--border-light); margin-bottom:24px; flex-wrap:wrap; gap:10px;">
+          <div>
+            <span style="font-size:0.8rem; color:var(--text-muted); font-weight:600;">Digital Object Identifier:</span>
+            <a href="#" id="modalDoiLink" target="_blank" style="font-family:var(--font-mono); font-size:0.85rem; color:var(--teal-600); font-weight:600; margin-left:6px;"></a>
+          </div>
+          <div style="display:flex; gap:14px; font-size:0.85rem; color:var(--text-muted);">
+            <span id="modalViews"><i class="fa-solid fa-eye"></i> 0 Views</span>
+            <span id="modalDownloads"><i class="fa-solid fa-download"></i> 0 Downloads</span>
+          </div>
+        </div>
+
+        <h4 style="font-family:var(--font-serif); font-size:1.2rem; color:var(--navy-900); margin-bottom:12px;">Abstract</h4>
+        <div id="modalAbstractBody" style="line-height:1.75; font-size:0.95rem; color:var(--text-secondary); white-space:pre-line; margin-bottom:24px;"></div>
+
+        <div style="margin-bottom:28px;">
+          <h5 style="font-size:0.85rem; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; font-weight:700;">Keywords</h5>
+          <div id="modalKeywordsList" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+        </div>
+
+        <div style="background:var(--bg-primary); padding:20px; border-radius:var(--radius-md); border:1px solid var(--border-light); margin-bottom:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <h4 style="font-family:var(--font-serif); font-size:1.05rem; color:var(--navy-900);">
+              <i class="fa-solid fa-quote-left" style="color:var(--gold-500);"></i> How to Cite This Publication
+            </h4>
+            <button class="btn btn-outline btn-sm" id="copyCitationBtn">
+              <i class="fa-regular fa-copy"></i> Copy Citation
+            </button>
+          </div>
+
+          <div class="citation-tabs" id="modalCitationTabs">
+            <button class="citation-tab-btn active" data-style="apa">APA 7th</button>
+            <button class="citation-tab-btn" data-style="mla">MLA 9th</button>
+            <button class="citation-tab-btn" data-style="chicago">Chicago</button>
+            <button class="citation-tab-btn" data-style="harvard">Harvard</button>
+            <button class="citation-tab-btn" data-style="ieee">IEEE</button>
+            <button class="citation-tab-btn" data-style="vancouver">Vancouver</button>
+          </div>
+
+          <div class="citation-box" id="citationBoxText">Generating citation...</div>
+
+          <div style="display:flex; gap:10px; margin-top:12px;">
+            <button class="btn btn-outline btn-sm" id="downloadRisBtn">
+              <i class="fa-solid fa-file-arrow-down"></i> Download RIS (EndNote/Zotero)
+            </button>
+            <button class="btn btn-outline btn-sm" id="downloadBibtexBtn">
+              <i class="fa-solid fa-file-code"></i> Download BibTeX
+            </button>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:12px;">
+          <button class="btn btn-secondary" id="closeModalBottomBtn">Close</button>
+          <a href="#" target="_blank" class="btn btn-pdf" id="modalDownloadPdfBtn">
+            <i class="fa-solid fa-file-pdf"></i> Download Official PDF Galley
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Supabase Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-content" style="max-width:480px;">
+      <div class="modal-header">
+        <h3 id="authModalTitle">Scholarly Account Access</h3>
+        <button class="modal-close-btn" id="closeAuthModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="auth-tabs">
+          <button class="auth-tab-btn active" id="tabLogin">Sign In</button>
+          <button class="auth-tab-btn" id="tabRegister">New Author Registration</button>
+        </div>
+
+        <!-- Sign In Form -->
+        <form id="signInForm">
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" id="loginEmail" class="form-input" placeholder="author@institution.edu" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" id="loginPassword" class="form-input" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;" id="loginSubmitBtn">
+            <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
+          </button>
+        </form>
+
+        <!-- Register Form -->
+        <form id="registerForm" style="display:none;">
+          <div class="form-group">
+            <label class="form-label">Full Name & Salutation *</label>
+            <input type="text" id="regFullName" class="form-input" placeholder="Prof. Dr. Jane Doe" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Institutional Affiliation *</label>
+            <input type="text" id="regAffiliation" class="form-input" placeholder="e.g. Faculty of Medicine, University of Health Sciences" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Academic Email *</label>
+            <input type="email" id="regEmail" class="form-input" placeholder="j.doe@institution.edu" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password *</label>
+            <input type="password" id="regPassword" class="form-input" placeholder="Minimum 6 characters" minlength="6" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Primary Role</label>
+            <select id="regRole" class="form-input">
+              <option value="author">Author (Submit manuscripts)</option>
+              <option value="reviewer">Peer Reviewer (Evaluate submissions)</option>
+              <option value="editor">Associate Editor</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;" id="registerSubmitBtn">
+            <i class="fa-solid fa-user-plus"></i> Complete Author Registration
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Author / Editorial Dashboard Drawer -->
+  <div class="modal-overlay" id="dashboardModal">
+    <div class="modal-content" style="max-width:880px;">
+      <div class="modal-header">
+        <div>
+          <h3><i class="fa-solid fa-gauge-high" style="color:var(--gold-500);"></i> Author & Editorial Dashboard</h3>
+          <span id="dashUserEmail" style="font-size:0.85rem; color:var(--text-muted);"></span>
+        </div>
+        <button class="modal-close-btn" id="closeDashModalBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+          <h4 style="font-family:var(--font-serif); font-size:1.15rem;">Your Submitted Manuscripts</h4>
+          <button class="btn btn-primary btn-sm" id="dashNewSubBtn">
+            <i class="fa-solid fa-plus"></i> Submit New Manuscript
+          </button>
+        </div>
+        
+        <div id="dashSubmissionsList" style="display:flex; flex-direction:column; gap:16px;">
+          <!-- Dynamically filled with user submissions from Supabase -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Site Footer (Dynamic Data from Supabase) -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-col">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <img src="assets/journal-seal.jpg" alt="JLMS Seal" style="width:48px; height:48px; border-radius:50%; border:1.5px solid var(--gold-400);">
+          <h4 style="margin:0;" id="footerJournalTitle">Journal of <span>Life & Medical</span> Science</h4>
+        </div>
+        <p id="footerJournalDesc">A flagship international open-access journal dedicated to rapid, uncompromising peer review and worldwide dissemination of medical advances, clinical trial outputs, and healthcare policy studies.</p>
+        <p><strong>ISSN (Online):</strong> <span id="footerIssnOnline">3007-1607</span> | <strong>ISSN (Print):</strong> <span id="footerIssnPrint">3007-1593</span></p>
+        <p><strong>Publisher:</strong> <span id="footerPublisher">Institute for Excellence in Education and Research (IEER)</span></p>
+      </div>
+
+      <div class="footer-col">
+        <h4>Journal <span>Navigation</span></h4>
+        <ul>
+          <li><a href="#home" data-view="home">Current Issue</a></li>
+          <li><a href="#archives" data-view="archives">Issue Archives</a></li>
+          <li><a href="#editorial" data-view="editorial">Editorial Board</a></li>
+          <li><a href="#indexing" data-view="indexing">Indexing & Metrics</a></li>
+          <li><a href="#about" data-view="about">Aims & Scope</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Author <span>Resources</span></h4>
+        <ul>
+          <li><a href="#guidelines" data-view="guidelines">Manuscript Guidelines</a></li>
+          <li><a href="#apc" data-view="charges">Publication Charges (APC)</a></li>
+          <li><a href="#submit" data-view="submit">Online Submission Portal</a></li>
+          <li><a href="#peer-review" data-view="policies">Double-Blind Peer Review</a></li>
+          <li><a href="#plagiarism" data-view="policies">COPE Ethics Standards</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Editorial <span>Office</span></h4>
+        <p><i class="fa-solid fa-location-dot" style="color:var(--gold-400); margin-right:8px;"></i> <span id="footerOfficeAddress">Global Research Park, Medical Sciences Wing</span></p>
+        <p><i class="fa-solid fa-envelope" style="color:var(--gold-400); margin-right:8px;"></i> <span id="footerContactEmail">editor@jlms-journal.org</span></p>
+        <p><i class="fa-solid fa-shield-halved" style="color:var(--gold-400); margin-right:8px;"></i> Crossref & DOAJ Indexed</p>
+        <div style="margin-top:16px;">
+          <img src="https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=400&q=80" alt="Laboratory" style="width:100%; height:80px; object-fit:cover; border-radius:var(--radius-sm); opacity:0.8;">
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <div id="footerCopyright">
+        © 2026 Journal of Life and Medical Science (JLMS). Published by Institute for Excellence in Education and Research.
+      </div>
+      <div style="display:flex; gap:16px; flex-wrap:wrap;">
+        <a href="#terms" data-view="policies" class="top-link">Privacy Statement</a>
+        <a href="#copyright" data-view="policies" class="top-link">Creative Commons CC-BY 4.0</a>
+        <a href="#sitemap" data-view="home" class="top-link">Sitemap</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Application Controller -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>

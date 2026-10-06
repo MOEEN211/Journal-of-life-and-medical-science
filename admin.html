@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JLMS Admin Panel</title>
+  <link rel="icon" type="image/jpeg" href="assets/journal-seal.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy-950: #050b14; --navy-900: #0a1424; --navy-850: #0f1c32; --navy-800: #162642;
+      --gold-500: #d4a34b; --gold-400: #e5b967; --gold-300: #f3d18c; --gold-600: #b8862f;
+      --teal-500: #0ea5e9; --green-500: #22c55e; --green-600: #16a34a;
+      --red-500: #ef4444; --red-600: #dc2626; --amber-500: #f59e0b;
+      --bg: #070d18; --surface: #0e1726; --elevated: #142136; --border: rgba(226,232,240,0.1);
+      --text: #f1f5f9; --text-sec: #cbd5e1; --text-muted: #64748b;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif; --serif: 'Playfair Display', Georgia, serif;
+      --mono: 'JetBrains Mono', monospace; --radius: 10px; --radius-lg: 16px;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4); --transition: 0.2s cubic-bezier(0.16,1,0.3,1);
+    }
+    html, body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
+    #loginScreen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(ellipse at 30% 50%, rgba(212,163,75,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 20%, rgba(14,165,233,0.07) 0%, transparent 50%), var(--navy-950); padding: 24px; }
+    .login-card { background: var(--surface); border: 1px solid rgba(212,163,75,0.2); border-radius: 24px; padding: 48px 44px; width: 100%; max-width: 440px; box-shadow: 0 32px 80px rgba(0,0,0,0.6); }
+    .login-logo { display: flex; align-items: center; gap: 14px; margin-bottom: 32px; }
+    .login-logo img { width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--gold-500); box-shadow: 0 0 20px rgba(212,163,75,0.3); }
+    .login-logo-text h2 { font-family: var(--serif); font-size: 1.1rem; color: #fff; line-height: 1.2; }
+    .login-logo-text span { font-size: 0.75rem; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 700; }
+    .login-title { font-family: var(--serif); font-size: 1.8rem; color: #fff; margin-bottom: 6px; }
+    .login-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .admin-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(212,163,75,0.12); border: 1px solid rgba(212,163,75,0.3); color: var(--gold-400); padding: 5px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 28px; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text-sec); margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-input { width: 100%; padding: 13px 16px; background: var(--elevated); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font); font-size: 0.95rem; transition: border-color var(--transition); }
+    .form-input:focus { outline: none; border-color: var(--gold-500); box-shadow: 0 0 0 3px rgba(212,163,75,0.12); }
+    .btn-login { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); color: #070d18; font-family: var(--font); font-size: 0.95rem; font-weight: 700; border: none; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all var(--transition); margin-top: 8px; }
+    .btn-login:hover { background: linear-gradient(135deg, var(--gold-400), var(--gold-500)); transform: translateY(-1px); }
+    #loginError { display: none; margin-top: 14px; padding: 12px 14px; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); border-radius: var(--radius); color: #fca5a5; font-size: 0.85rem; }
+    #dashboard { display: none; min-height: 100vh; }
+    .admin-layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 240px; background: var(--surface); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; }
+    .sidebar-brand { padding: 22px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .sidebar-brand img { width: 36px; height: 36px; border-radius: 50%; border: 1.5px solid var(--gold-500); }
+    .sidebar-brand-text { font-size: 0.82rem; font-weight: 700; color: #fff; line-height: 1.3; }
+    .sidebar-brand-text small { color: var(--gold-400); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    .sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: var(--radius); color: var(--text-muted); font-size: 0.88rem; font-weight: 500; cursor: pointer; transition: all var(--transition); border: none; background: none; width: 100%; text-align: left; font-family: var(--font); }
+    .nav-item:hover, .nav-item.active { background: rgba(212,163,75,0.08); color: var(--gold-300); }
+    .nav-item i { width: 16px; font-size: 0.85rem; }
+    .sidebar-footer { padding: 16px 12px; border-top: 1px solid var(--border); }
+    .admin-user-pill { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: var(--elevated); border-radius: var(--radius); border: 1px solid var(--border); }
+    .admin-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, var(--gold-500), var(--gold-600)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 800; color: #070d18; flex-shrink: 0; }
+    .admin-user-info { flex: 1; min-width: 0; }
+    .admin-user-name { font-size: 0.8rem; font-weight: 700; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .admin-user-role { font-size: 0.65rem; color: var(--gold-400); text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    .btn-logout-admin { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 4px; font-size: 0.85rem; transition: color var(--transition); }
+    .btn-logout-admin:hover { color: var(--red-500); }
+    .main-content { margin-left: 240px; flex: 1; padding: 32px; overflow-x: hidden; }
+    .page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 16px; }
+    .page-header h1 { font-family: var(--serif); font-size: 1.8rem; color: #fff; }
+    .page-header p { color: var(--text-muted); font-size: 0.88rem; margin-top: 2px; }
+    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; display: flex; align-items: center; gap: 16px; transition: transform var(--transition); }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-icon { width: 44px; height: 44px; border-radius: var(--radius); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+    .stat-icon.gold { background: rgba(212,163,75,0.15); color: var(--gold-400); }
+    .stat-icon.blue { background: rgba(14,165,233,0.15); color: var(--teal-500); }
+    .stat-icon.green { background: rgba(34,197,94,0.15); color: var(--green-500); }
+    .stat-icon.red { background: rgba(239,68,68,0.15); color: var(--red-500); }
+    .stat-info .stat-val { font-size: 1.7rem; font-weight: 800; color: #fff; line-height: 1; }
+    .stat-info .stat-lbl { font-size: 0.78rem; color: var(--text-muted); margin-top: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+    .filter-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-btn { padding: 7px 14px; border-radius: 999px; font-size: 0.82rem; font-weight: 600; border: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer; transition: all var(--transition); font-family: var(--font); }
+    .filter-btn:hover { border-color: var(--gold-500); color: var(--gold-300); }
+    .filter-btn.active { background: var(--gold-500); border-color: var(--gold-500); color: #070d18; }
+    .table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .table-card table { width: 100%; border-collapse: collapse; }
+    .table-card th { padding: 14px 18px; text-align: left; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); background: var(--elevated); border-bottom: 1px solid var(--border); }
+    .table-card td { padding: 16px 18px; border-bottom: 1px solid var(--border); vertical-align: middle; font-size: 0.88rem; color: var(--text-sec); }
+    .table-card tr:last-child td { border-bottom: none; }
+    .table-card tr:hover td { background: rgba(255,255,255,0.02); }
+    .td-title { font-weight: 600; color: #fff; max-width: 260px; line-height: 1.4; }
+    .td-author { color: var(--text-sec); font-size: 0.83rem; }
+    .td-affil { color: var(--text-muted); font-size: 0.78rem; margin-top: 2px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap; }
+    .status-badge.submitted { background: rgba(14,165,233,0.15); color: #7dd3fc; }
+    .status-badge.under_review { background: rgba(245,158,11,0.15); color: #fbbf24; }
+    .status-badge.accepted { background: rgba(34,197,94,0.15); color: #86efac; }
+    .status-badge.rejected { background: rgba(239,68,68,0.15); color: #fca5a5; }
+    .action-btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn-action { padding: 6px 14px; border-radius: var(--radius); font-size: 0.78rem; font-weight: 700; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 6px; transition: all var(--transition); font-family: var(--font); white-space: nowrap; }
+    .btn-approve { background: rgba(34,197,94,0.15); color: var(--green-500); border: 1px solid rgba(34,197,94,0.3); }
+    .btn-approve:hover { background: var(--green-600); color: #fff; }
+    .btn-reject { background: rgba(239,68,68,0.1); color: var(--red-500); border: 1px solid rgba(239,68,68,0.25); }
+    .btn-reject:hover { background: var(--red-600); color: #fff; }
+    .btn-view { background: rgba(14,165,233,0.1); color: var(--teal-500); border: 1px solid rgba(14,165,233,0.25); }
+    .btn-view:hover { background: rgba(14,165,233,0.25); }
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; display: block; color: var(--border); }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(5,11,20,0.75); backdrop-filter: blur(6px); z-index: 9000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.2s ease; }
+    .modal-overlay.active { opacity: 1; visibility: visible; }
+    .modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.7); transform: translateY(16px); transition: transform 0.2s ease; }
+    .modal-overlay.active .modal-box { transform: translateY(0); }
+    .modal-head { padding: 22px 26px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--surface); z-index: 10; }
+    .modal-head h3 { font-family: var(--serif); font-size: 1.3rem; color: #fff; }
+    .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer; padding: 6px; border-radius: 6px; transition: color var(--transition); }
+    .modal-close:hover { color: #fff; }
+    .modal-body { padding: 26px; }
+    .modal-body .form-group { margin-bottom: 18px; }
+    .submission-preview { background: var(--elevated); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 22px; }
+    .submission-preview h4 { font-family: var(--serif); font-size: 1.05rem; color: #fff; margin-bottom: 6px; line-height: 1.4; }
+    .submission-preview p { font-size: 0.82rem; color: var(--text-muted); }
+    .modal-footer { padding: 18px 26px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel { padding: 10px 20px; background: transparent; border: 1px solid var(--border); color: var(--text-muted); border-radius: var(--radius); cursor: pointer; font-family: var(--font); font-size: 0.88rem; font-weight: 600; transition: all var(--transition); }
+    .btn-cancel:hover { border-color: var(--text-muted); color: #fff; }
+    .btn-confirm { padding: 10px 22px; border: none; border-radius: var(--radius); cursor: pointer; font-family: var(--font); font-size: 0.88rem; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; transition: all var(--transition); }
+    .btn-confirm.approve { background: var(--green-600); color: #fff; }
+    .btn-confirm.approve:hover { background: #15803d; }
+    .btn-confirm.reject { background: var(--red-600); color: #fff; }
+    .btn-confirm.reject:hover { background: #b91c1c; }
+    .form-select { width: 100%; padding: 12px 16px; background: var(--elevated); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font); font-size: 0.92rem; }
+    .form-select:focus { outline: none; border-color: var(--gold-500); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .toast-container { position: fixed; bottom: 24px; right: 24px; display: flex; flex-direction: column; gap: 10px; z-index: 99999; }
+    .toast { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--gold-500); padding: 14px 18px; border-radius: var(--radius); box-shadow: var(--shadow); display: flex; align-items: center; gap: 10px; font-size: 0.88rem; color: var(--text); animation: toastIn 0.3s ease; max-width: 340px; }
+    .toast.success { border-left-color: var(--green-500); }
+    .toast.error { border-left-color: var(--red-500); }
+    @keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 0.6s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .mobile-top-bar { display: none; align-items: center; justify-content: space-between; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 20px; }
+    @media (max-width: 900px) { .sidebar { width: 200px; } .main-content { margin-left: 200px; padding: 20px; } .stats-row { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 640px) { 
+      .mobile-top-bar { display: flex; }
+      .sidebar { display: none; } 
+      .main-content { margin-left: 0; padding: 16px; } 
+      .stats-row { grid-template-columns: repeat(2,1fr); gap: 10px; } 
+      .form-row { grid-template-columns: 1fr; } 
+      .table-card { overflow-x: auto; -webkit-overflow-scrolling: touch; } 
+      .table-card table { min-width: 640px; } 
+    }
+  </style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="assets/journal-seal.jpg" alt="Journal Seal">
+      <div class="login-logo-text">
+        <h2>Journal of Life &amp;<br>Medical Science</h2>
+        <span>Admin Portal</span>
+      </div>
+    </div>
+    <div class="admin-badge"><i class="fa-solid fa-shield-halved"></i> Editor / Administrator Access Only</div>
+    <h2 class="login-title">Sign In</h2>
+    <p class="login-subtitle">Use your admin credentials to access the editorial dashboard.</p>
+    <form id="adminLoginForm">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input class="form-input" type="email" id="adminEmail" placeholder="admin@jlms-journal.org" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="adminPassword" placeholder="••••••••" required>
+      </div>
+      <button type="submit" class="btn-login" id="loginBtn">
+        <i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard
+      </button>
+      <div id="loginError"></div>
+    </form>
+  </div>
+</div>
+
+<div id="dashboard">
+  <div class="admin-layout">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <img src="assets/journal-seal.jpg" alt="Seal">
+        <div class="sidebar-brand-text">JLMS Admin<br><small>Editorial Dashboard</small></div>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active"><i class="fa-solid fa-inbox"></i> Submissions</button>
+        <button class="nav-item" onclick="openTestEmailModal()"><i class="fa-solid fa-envelope-circle-check"></i> Test EmailJS</button>
+        <button class="nav-item" onclick="window.open('/','_blank')"><i class="fa-solid fa-globe"></i> View Live Site</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="admin-user-pill">
+          <div class="admin-avatar" id="adminInitials">AD</div>
+          <div class="admin-user-info">
+            <div class="admin-user-name" id="adminName">Admin</div>
+            <div class="admin-user-role">Editor</div>
+          </div>
+          <button class="btn-logout-admin" id="adminLogoutBtn" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <!-- Mobile Bar -->
+      <div class="mobile-top-bar">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="assets/journal-seal.jpg" alt="Seal" style="width:28px; height:28px; border-radius:50%; border:1.5px solid var(--gold-500);">
+          <span style="font-weight:700; font-size:0.9rem; color:#fff;">JLMS Admin</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button class="btn-action btn-view" onclick="openTestEmailModal()" style="padding:6px 10px; font-size:0.75rem;"><i class="fa-solid fa-paper-plane"></i> Test Email</button>
+          <a href="/" class="btn-action btn-view" style="padding:6px 12px; font-size:0.78rem;"><i class="fa-solid fa-globe"></i> Live Site</a>
+          <button class="btn-logout-admin" id="mobileLogoutBtn" title="Logout" style="font-size:1.1rem; padding:6px; color:var(--red-500);"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+      <div class="page-header">
+        <div><h1>Submissions</h1><p>Review, approve or reject manuscript submissions</p></div>
+        <button class="btn-action btn-view" onclick="loadSubmissions()" style="padding:10px 18px;font-size:0.85rem;"><i class="fa-solid fa-rotate"></i> Refresh</button>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-icon gold"><i class="fa-solid fa-inbox"></i></div><div class="stat-info"><div class="stat-val" id="statTotal">0</div><div class="stat-lbl">Total</div></div></div>
+        <div class="stat-card"><div class="stat-icon blue"><i class="fa-solid fa-clock"></i></div><div class="stat-info"><div class="stat-val" id="statPending">0</div><div class="stat-lbl">Pending</div></div></div>
+        <div class="stat-card"><div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div><div class="stat-info"><div class="stat-val" id="statAccepted">0</div><div class="stat-lbl">Published</div></div></div>
+        <div class="stat-card"><div class="stat-icon red"><i class="fa-solid fa-xmark"></i></div><div class="stat-info"><div class="stat-val" id="statRejected">0</div><div class="stat-lbl">Rejected</div></div></div>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="submitted">Submitted</button>
+        <button class="filter-btn" data-filter="under_review">Under Review</button>
+        <button class="filter-btn" data-filter="accepted">Accepted</button>
+        <button class="filter-btn" data-filter="rejected">Rejected</button>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead><tr><th>Manuscript</th><th>Author</th><th>Section</th><th>Submitted</th><th>Status</th><th>Actions</th></tr></thead>
+          <tbody id="submissionsTableBody"><tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- Approve Modal -->
+<div class="modal-overlay" id="approveModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fa-solid fa-circle-check" style="color:var(--green-500);margin-right:8px;"></i>Approve &amp; Publish</h3>
+      <button class="modal-close" data-close="approveModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="submission-preview"><h4 id="approveTitle"></h4><p id="approveAuthor"></p></div>
+      <div class="form-group"><label class="form-label">Publish in Issue *</label><select class="form-select" id="approveIssue" required><option value="">— Select Issue —</option></select></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Page</label><input class="form-input" type="number" id="approveFirstPage" placeholder="e.g. 1" min="1"></div>
+        <div class="form-group"><label class="form-label">Last Page</label><input class="form-input" type="number" id="approveLastPage" placeholder="e.g. 14" min="1"></div>
+      </div>
+      <div class="form-group"><label class="form-label">DOI (leave blank to auto-generate)</label><input class="form-input" type="text" id="approveDoi" placeholder="e.g. 10.59823/jlms.v4i7.001"></div>
+      <div class="form-group"><label class="form-label">PDF URL (optional)</label><input class="form-input" type="url" id="approvePdfUrl" placeholder="https://..."></div>
+      <div class="form-group"><label class="form-label">Editor Note (optional)</label><textarea class="form-input" id="approveNote" rows="3" placeholder="Congratulations! Your manuscript has been accepted..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" data-close="approveModal">Cancel</button>
+      <button class="btn-confirm approve" id="confirmApproveBtn"><i class="fa-solid fa-paper-plane"></i> Publish Article</button>
+    </div>
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" id="rejectModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fa-solid fa-circle-xmark" style="color:var(--red-500);margin-right:8px;"></i>Reject Submission</h3>
+      <button class="modal-close" data-close="rejectModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="submission-preview"><h4 id="rejectTitle"></h4><p id="rejectAuthor"></p></div>
+      <div class="form-group"><label class="form-label">Reason for Rejection *</label>
+        <select class="form-select" id="rejectReason">
+          <option value="Does not meet scope">Does not meet journal scope</option>
+          <option value="Insufficient methodology">Insufficient methodology</option>
+          <option value="Inadequate literature review">Inadequate literature review</option>
+          <option value="Poor presentation quality">Poor presentation quality</option>
+          <option value="Duplicate submission detected">Duplicate submission detected</option>
+          <option value="Ethical concerns">Ethical/integrity concerns</option>
+          <option value="Other">Other (specify below)</option>
+        </select>
+      </div>
+      <div class="form-group"><label class="form-label">Additional Comments</label><textarea class="form-input" id="rejectComments" rows="4" placeholder="Provide detailed feedback to the author..."></textarea></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" data-close="rejectModal">Cancel</button>
+      <button class="btn-confirm reject" id="confirmRejectBtn"><i class="fa-solid fa-xmark"></i> Confirm Rejection</button>
+    </div>
+  </div>
+</div>
+
+<!-- View Modal -->
+<div class="modal-overlay" id="viewModal">
+  <div class="modal-box" style="max-width:700px;">
+    <div class="modal-head"><h3>Submission Details</h3><button class="modal-close" data-close="viewModal"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="modal-body" id="viewModalBody"></div>
+    <div class="modal-footer"><button class="btn-cancel" data-close="viewModal">Close</button></div>
+  </div>
+</div>
+
+<!-- Test Email Modal -->
+<div class="modal-overlay" id="testEmailModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3><i class="fa-solid fa-envelope-circle-check" style="color:var(--gold-400);margin-right:8px;"></i>Test EmailJS Delivery</h3>
+      <button class="modal-close" data-close="testEmailModal"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:14px; font-size:0.85rem; color:var(--text-sec); line-height:1.5;">
+        Connected Service: <strong style="color:var(--gold-400);">service_fxml9ya</strong> (Gmail: moeenijazfiverr@gmail.com)<br>
+        Active Template: <strong style="color:var(--gold-400);">template_s6zm9qu</strong>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Recipient Name</label>
+        <input class="form-input" type="text" id="testEmailName" value="Editorial Recipient">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Recipient Email Address</label>
+        <input class="form-input" type="email" id="testEmailAddress" value="moeenijazfiverr@gmail.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message Content</label>
+        <textarea class="form-input" id="testEmailMsg" rows="3">Greetings! This is a test email sent from the Journal of Life and Medical Science editorial system verifying EmailJS delivery.</textarea>
+      </div>
+      <div id="testEmailResult" style="display:none; font-size:0.85rem; padding:12px; border-radius:var(--radius); margin-top:12px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" data-close="testEmailModal">Close</button>
+      <button class="btn-confirm approve" id="sendTestEmailBtn"><i class="fa-solid fa-paper-plane"></i> Send Test Email</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const SUPABASE_URL = 'https://pmbqtxzynycmbwnzeuez.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBtYnF0eHp5bnljbWJ3bnpldWV6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA2NzAzMzksImV4cCI6MjEwNjI0NjMzOX0.gD92wjwSXMxJX2OtEdl7jXQ6oRxsNGV5IAFII8HUBIk';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// EmailJS Credentials Configuration (Configured from EmailJS Dashboard)
+const EMAILJS_CONFIG = {
+  serviceId: 'service_fxml9ya',
+  templateId: 'template_s6zm9qu',
+  publicKey: 'S5TuNJR57V2HY5sEO'
+};
+
+if (window.emailjs && EMAILJS_CONFIG.publicKey) {
+  try {
+    window.emailjs.init(EMAILJS_CONFIG.publicKey);
+  } catch (e) {
+    console.warn('EmailJS init in admin:', e);
+  }
+}
+
+let allSubmissions = [], activeFilter = 'all', currentSubmission = null, issues = [], sections = [];
+
+// Auth
+document.getElementById('adminLoginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const btn = document.getElementById('loginBtn');
+  btn.innerHTML = `<span class="spinner"></span> Signing in...`; btn.disabled = true;
+  const loginError = document.getElementById('loginError');
+  loginError.style.display = 'none';
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass = document.getElementById('adminPassword').value;
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+  btn.innerHTML = `<i class="fa-solid fa-right-to-bracket"></i> Sign In to Dashboard`; btn.disabled = false;
+  if (error) { loginError.style.display = 'block'; loginError.textContent = error.message; return; }
+  if (data.user?.user_metadata?.role !== 'admin') {
+    await supabase.auth.signOut();
+    loginError.style.display = 'block'; loginError.textContent = 'Access denied. Administrators only.'; return;
+  }
+  enterDashboard(data.user);
+});
+
+async function doLogout() {
+  await supabase.auth.signOut();
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+document.getElementById('adminLogoutBtn')?.addEventListener('click', doLogout);
+document.getElementById('mobileLogoutBtn')?.addEventListener('click', doLogout);
+
+supabase.auth.getSession().then(({ data: { session } }) => {
+  if (session?.user?.user_metadata?.role === 'admin') {
+    enterDashboard(session.user);
+  } else {
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+});
+
+function enterDashboard(user) {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  const name = user.user_metadata?.full_name || user.email.split('@')[0];
+  document.getElementById('adminName').textContent = name;
+  document.getElementById('adminInitials').textContent = name.trim().split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  loadIssuesAndSections(); loadSubmissions();
+}
+
+async function loadIssuesAndSections() {
+  const [iss, sec] = await Promise.all([
+    supabase.from('issues').select('id,title,volume,number,year,is_current').order('year', { ascending: false }),
+    supabase.from('sections').select('id,title')
+  ]);
+  issues = iss.data || []; sections = sec.data || [];
+  const sel = document.getElementById('approveIssue');
+  sel.innerHTML = '<option value="">— Select Issue —</option>';
+  issues.forEach(i => { 
+    const o = document.createElement('option'); 
+    o.value = i.id; 
+    o.textContent = `Vol. ${i.volume} No. ${i.number} (${i.year})${i.is_current ? ' ★ Current Active Issue (Shows on Landing Page)' : ''}`; 
+    if (i.is_current) o.selected = true;
+    sel.appendChild(o); 
+  });
+}
+
+window.loadSubmissions = async function() {
+  document.getElementById('submissionsTableBody').innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
+  const { data, error } = await supabase.from('submissions').select('*').order('created_at', { ascending: false });
+  if (error) { showToast('Failed to load submissions', 'error'); return; }
+  allSubmissions = data || []; updateStats(); renderTable();
+};
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allSubmissions.length;
+  document.getElementById('statPending').textContent = allSubmissions.filter(s => ['submitted','under_review'].includes(s.status)).length;
+  document.getElementById('statAccepted').textContent = allSubmissions.filter(s => s.status === 'accepted').length;
+  document.getElementById('statRejected').textContent = allSubmissions.filter(s => s.status === 'rejected').length;
+}
+
+function renderTable() {
+  const filtered = activeFilter === 'all' ? allSubmissions : allSubmissions.filter(s => s.status === activeFilter);
+  const tbody = document.getElementById('submissionsTableBody');
+  if (filtered.length === 0) { tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="fa-regular fa-folder-open"></i><p>No submissions found.</p></div></td></tr>`; return; }
+  tbody.innerHTML = filtered.map(sub => {
+    const date = new Date(sub.created_at).toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' });
+    const canAct = ['submitted','under_review'].includes(sub.status);
+    return `<tr>
+      <td><div class="td-title">${escHtml(sub.title)}</div><div class="td-affil" style="font-family:var(--mono);font-size:0.7rem;">#${sub.id.slice(0,8)}</div></td>
+      <td><div class="td-author">${escHtml(sub.author_name)}</div><div class="td-affil">${escHtml(sub.author_email)}</div><div class="td-affil">${escHtml(sub.author_affiliation||'')}</div></td>
+      <td><span style="font-size:0.8rem;color:var(--text-muted);">${escHtml(sub.section||'—')}</span></td>
+      <td><span style="font-size:0.8rem;color:var(--text-muted);">${date}</span></td>
+      <td><span class="status-badge ${sub.status}">${sub.status.replace('_',' ')}</span></td>
+      <td><div class="action-btns">
+        <button class="btn-action btn-view" onclick="openView('${sub.id}')"><i class="fa-solid fa-eye"></i> View</button>
+        ${canAct ? `<button class="btn-action btn-approve" onclick="openApprove('${sub.id}')"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
+        ${canAct ? `<button class="btn-action btn-reject" onclick="openReject('${sub.id}')"><i class="fa-solid fa-xmark"></i> Reject</button>` : ''}
+        ${sub.status==='accepted' ? `<span style="color:var(--green-500);font-size:0.78rem;font-weight:700;"><i class="fa-solid fa-circle-check"></i> Published</span>` : ''}
+        ${sub.status==='rejected' ? `<span style="color:var(--red-500);font-size:0.78rem;font-weight:700;"><i class="fa-solid fa-ban"></i> Rejected</span>` : ''}
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active'); activeFilter = btn.dataset.filter; renderTable();
+  });
+});
+
+window.openView = function(id) {
+  const sub = allSubmissions.find(s => s.id === id); if (!sub) return;
+  const date = new Date(sub.created_at).toLocaleDateString('en-US', { year:'numeric', month:'long', day:'numeric' });
+  document.getElementById('viewModalBody').innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div><div style="font-size:0.72rem;color:var(--gold-400);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Title</div><div style="font-family:var(--serif);font-size:1.1rem;color:#fff;line-height:1.4;">${escHtml(sub.title)}</div></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Author</div><div style="font-size:0.88rem;">${escHtml(sub.author_name)}</div><div style="font-size:0.8rem;color:var(--text-muted);">${escHtml(sub.author_email)}</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Affiliation</div><div style="font-size:0.85rem;">${escHtml(sub.author_affiliation||'—')}</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Section</div><div style="font-size:0.85rem;">${escHtml(sub.section||'—')}</div></div>
+        <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:5px;">Submitted</div><div style="font-size:0.85rem;">${date}</div></div>
+      </div>
+      <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Abstract</div><div style="font-size:0.88rem;color:var(--text-sec);line-height:1.7;background:var(--elevated);padding:14px;border-radius:var(--radius);border:1px solid var(--border);">${escHtml(sub.abstract||'—')}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Keywords</div><div style="font-size:0.85rem;color:var(--gold-300);">${escHtml(sub.keywords||'—')}</div></div>
+      <div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Attached Manuscript File</div><div style="font-size:0.85rem;">${sub.file_url ? `<a href="${escHtml(sub.file_url)}" target="_blank" style="color:var(--teal-500);text-decoration:underline;display:inline-flex;align-items:center;gap:6px;"><i class="fa-solid fa-file-pdf"></i> ${escHtml(sub.file_name||'Download File')}</a>` : `<span style="color:var(--text-muted);"><i class="fa-solid fa-file-pdf"></i> ${escHtml(sub.file_name||'No file')}</span>`}</div></div>
+      ${sub.review_comments ? `<div><div style="font-size:0.7rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">Review Comments</div><div style="font-size:0.85rem;">${escHtml(sub.review_comments)}</div></div>` : ''}
+    </div>`;
+  openModal('viewModal');
+};
+
+window.openApprove = function(id) {
+  currentSubmission = allSubmissions.find(s => s.id === id); if (!currentSubmission) return;
+  document.getElementById('approveTitle').textContent = currentSubmission.title;
+  document.getElementById('approveAuthor').textContent = `By ${currentSubmission.author_name} — ${currentSubmission.author_email}`;
+  document.getElementById('approveNote').value = ''; document.getElementById('approveDoi').value = '';
+  document.getElementById('approvePdfUrl').value = currentSubmission.file_url || '';
+  document.getElementById('approveFirstPage').value = ''; document.getElementById('approveLastPage').value = '';
+  openModal('approveModal');
+};
+
+document.getElementById('confirmApproveBtn').addEventListener('click', async () => {
+  const issueId = document.getElementById('approveIssue').value;
+  if (!issueId) { showToast('Please select an issue.', 'error'); return; }
+  const btn = document.getElementById('confirmApproveBtn');
+  btn.innerHTML = `<span class="spinner"></span> Publishing...`; btn.disabled = true;
+  const sub = currentSubmission;
+  const sectionObj = sections.find(s => s.title.toLowerCase().includes((sub.section||'').toLowerCase()) || (sub.section||'').toLowerCase().includes(s.title.toLowerCase())) || sections[0];
+  const keywordsArr = (sub.keywords||'').split(/[,;]+/).map(k=>k.trim()).filter(Boolean);
+  const doi = document.getElementById('approveDoi').value.trim() || `10.59823/jlms.v${new Date().getFullYear()}.${sub.id.slice(0,6)}`;
+  const { data: article, error: artErr } = await supabase.from('articles').insert([{
+    title: sub.title, abstract: sub.abstract, keywords: keywordsArr, doi, issue_id: issueId,
+    section_id: sectionObj?.id||null, pdf_url: document.getElementById('approvePdfUrl').value.trim()||sub.file_url||null,
+    first_page: parseInt(document.getElementById('approveFirstPage').value)||null,
+    last_page: parseInt(document.getElementById('approveLastPage').value)||null,
+    views_count: 0, downloads_count: 0,
+    status: 'published',
+    published_at: new Date().toISOString()
+  }]).select().single();
+  btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Publish Article`; btn.disabled = false;
+  if (artErr) { showToast('Error: ' + artErr.message, 'error'); return; }
+  await supabase.from('article_authors').insert([{ article_id: article.id, name: sub.author_name, email: sub.author_email, affiliation: sub.author_affiliation||'', is_corresponding: true, order_index: 1 }]);
+  await supabase.from('submissions').update({ status: 'accepted', review_comments: document.getElementById('approveNote').value.trim()||'Accepted and published.' }).eq('id', sub.id);
+  closeModal('approveModal');
+  showToast('Article published on main site!', 'success');
+
+  // Send Automatic Email to Author via EmailJS
+  if (window.emailjs && EMAILJS_CONFIG.publicKey) {
+    try {
+      const selectedIssue = issues.find(i => i.id === issueId);
+      const issueLabel = selectedIssue ? `Vol. ${selectedIssue.volume} No. ${selectedIssue.number} (${selectedIssue.year})` : 'Current Issue';
+      const editorNote = document.getElementById('approveNote').value.trim() || 'Congratulations! Your manuscript has met all editorial standards and peer-review criteria and has been officially accepted and published.';
+      
+      const emailMessage = `Dear ${sub.author_name},\n\nWe are pleased to inform you that your manuscript "${sub.title}" has been officially accepted and published in the Journal of Life and Medical Science (${issueLabel}).\n\nDOI: ${doi}\nSection: ${sub.section || 'Original Research'}\nEditorial Remarks: ${editorNote}\n\nAccess your published paper at: ${window.location.origin}\n\nWarm regards,\nEditorial Board\nJournal of Life and Medical Science\nContact: moeenijazfiverr@gmail.com`;
+
+      await window.emailjs.send(
+        EMAILJS_CONFIG.serviceId,
+        EMAILJS_CONFIG.templateId,
+        {
+          to_name: sub.author_name,
+          user_name: sub.author_name,
+          name: sub.author_name,
+          to_email: sub.author_email,
+          user_email: sub.author_email,
+          email: sub.author_email,
+          customer_email: sub.author_email,
+          client_email: sub.author_email,
+          recipient: sub.author_email,
+          recipient_email: sub.author_email,
+          to: sub.author_email,
+          send_to: sub.author_email,
+          reply_to: 'moeenijazfiverr@gmail.com',
+          from_name: 'Journal of Life and Medical Science',
+          article_title: sub.title,
+          title: sub.title,
+          section: sub.section || 'Original Research',
+          doi: doi,
+          issue: issueLabel,
+          editor_note: editorNote,
+          message: emailMessage,
+          order_details: emailMessage,
+          content: emailMessage,
+          order_id: sub.id.slice(0, 8),
+          tracking_id: sub.id.slice(0, 8),
+          journal_name: 'Journal of Life and Medical Science',
+          status: 'Accepted & Published',
+          site_url: window.location.origin
+        },
+        EMAILJS_CONFIG.publicKey
+      );
+      showToast('Acceptance email sent to ' + sub.author_email, 'success');
+    } catch (emailErr) {
+      console.warn('EmailJS error:', emailErr);
+      showToast('Published, but email notice failed: ' + (emailErr.text || emailErr.message), 'info');
+    }
+  }
+
+  await loadSubmissions();
+});
+
+window.openReject = function(id) {
+  currentSubmission = allSubmissions.find(s => s.id === id); if (!currentSubmission) return;
+  document.getElementById('rejectTitle').textContent = currentSubmission.title;
+  document.getElementById('rejectAuthor').textContent = `By ${currentSubmission.author_name} — ${currentSubmission.author_email}`;
+  document.getElementById('rejectComments').value = ''; openModal('rejectModal');
+};
+
+document.getElementById('confirmRejectBtn').addEventListener('click', async () => {
+  const btn = document.getElementById('confirmRejectBtn');
+  btn.innerHTML = `<span class="spinner"></span> Rejecting...`; btn.disabled = true;
+  const reason = document.getElementById('rejectReason').value;
+  const comments = document.getElementById('rejectComments').value.trim();
+  const sub = currentSubmission;
+  await supabase.from('submissions').update({ status: 'rejected', review_comments: comments ? `${reason}. ${comments}` : reason }).eq('id', currentSubmission.id);
+  btn.innerHTML = `<i class="fa-solid fa-xmark"></i> Confirm Rejection`; btn.disabled = false;
+  closeModal('rejectModal');
+  showToast('Submission rejected.', 'success');
+
+  // Send Notification Email on Rejection
+  if (window.emailjs && EMAILJS_CONFIG.publicKey && sub.author_email) {
+    try {
+      const emailMessage = `Dear ${sub.author_name},\n\nThank you for submitting your manuscript "${sub.title}" to the Journal of Life and Medical Science.\n\nFollowing editorial evaluation, we regret to inform you that your manuscript cannot be accepted for publication at this time.\n\nEvaluation Decision: ${reason}\n${comments ? 'Editorial Feedback: ' + comments : ''}\n\nWe appreciate the opportunity to consider your research.\n\nWarm regards,\nEditorial Board\nJournal of Life and Medical Science\nContact: moeenijazfiverr@gmail.com`;
+
+      await window.emailjs.send(
+        EMAILJS_CONFIG.serviceId,
+        EMAILJS_CONFIG.templateId,
+        {
+          to_name: sub.author_name,
+          user_name: sub.author_name,
+          name: sub.author_name,
+          to_email: sub.author_email,
+          user_email: sub.author_email,
+          email: sub.author_email,
+          customer_email: sub.author_email,
+          client_email: sub.author_email,
+          recipient: sub.author_email,
+          recipient_email: sub.author_email,
+          to: sub.author_email,
+          send_to: sub.author_email,
+          reply_to: 'moeenijazfiverr@gmail.com',
+          from_name: 'Journal of Life and Medical Science',
+          article_title: sub.title,
+          title: sub.title,
+          message: emailMessage,
+          order_details: emailMessage,
+          content: emailMessage,
+          editor_note: comments || reason,
+          order_id: sub.id.slice(0, 8),
+          tracking_id: sub.id.slice(0, 8),
+          journal_name: 'Journal of Life and Medical Science',
+          status: 'Rejected'
+        },
+        EMAILJS_CONFIG.publicKey
+      );
+      showToast('Rejection email notice sent to ' + sub.author_email, 'info');
+    } catch (err) {
+      console.warn('Rejection email error:', err);
+    }
+  }
+
+// Test Email Modal Handlers
+window.openTestEmailModal = function() {
+  openModal('testEmailModal');
+  const resBox = document.getElementById('testEmailResult');
+  if (resBox) resBox.style.display = 'none';
+};
+
+document.getElementById('sendTestEmailBtn')?.addEventListener('click', async () => {
+  const btn = document.getElementById('sendTestEmailBtn');
+  const resBox = document.getElementById('testEmailResult');
+  const toName = document.getElementById('testEmailName').value.trim() || 'Colleague';
+  const toEmail = document.getElementById('testEmailAddress').value.trim();
+  const testMsg = document.getElementById('testEmailMsg').value.trim();
+
+  if (!toEmail) {
+    showToast('Please enter a recipient email address', 'error');
+    return;
+  }
+
+  btn.innerHTML = `<span class="spinner"></span> Sending...`;
+  btn.disabled = true;
+  resBox.style.display = 'none';
+
+  try {
+    const res = await window.emailjs.send(
+      EMAILJS_CONFIG.serviceId,
+      EMAILJS_CONFIG.templateId,
+      {
+        to_name: toName,
+        user_name: toName,
+        name: toName,
+        to_email: toEmail,
+        user_email: toEmail,
+        email: toEmail,
+        customer_email: toEmail,
+        client_email: toEmail,
+        recipient: toEmail,
+        recipient_email: toEmail,
+        to: toEmail,
+        send_to: toEmail,
+        reply_to: 'moeenijazfiverr@gmail.com',
+        from_name: 'Journal of Life and Medical Science',
+        article_title: 'Test Verification Manuscript',
+        title: 'Test Verification Manuscript',
+        message: testMsg,
+        order_details: testMsg,
+        content: testMsg,
+        order_id: 'JLMS-TEST-' + Math.floor(1000 + Math.random() * 9000),
+        tracking_id: 'JLMS-TEST-' + Math.floor(1000 + Math.random() * 9000),
+        journal_name: 'Journal of Life and Medical Science',
+        status: 'Verified Delivery',
+        site_url: window.location.origin
+      },
+      EMAILJS_CONFIG.publicKey
+    );
+
+    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Test Email`;
+    btn.disabled = false;
+    resBox.style.display = 'block';
+    resBox.style.background = 'rgba(34,197,94,0.15)';
+    resBox.style.border = '1px solid rgba(34,197,94,0.3)';
+    resBox.style.color = '#86efac';
+    resBox.innerHTML = `<i class="fa-solid fa-circle-check"></i> Email successfully dispatched via EmailJS! (Status: ${res.status})`;
+    showToast(`Test email successfully delivered to ${toEmail}!`, 'success');
+  } catch (err) {
+    btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Test Email`;
+    btn.disabled = false;
+    resBox.style.display = 'block';
+    resBox.style.background = 'rgba(239,68,68,0.15)';
+    resBox.style.border = '1px solid rgba(239,68,68,0.3)';
+    resBox.style.color = '#fca5a5';
+    resBox.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Error: ${err.text || err.message || JSON.stringify(err)}`;
+    showToast('Failed to send test email: ' + (err.text || err.message), 'error');
+  }
+});
+
+function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow=''; }
+document.querySelectorAll('[data-close]').forEach(btn => btn.addEventListener('click', () => closeModal(btn.dataset.close)));
+document.querySelectorAll('.modal-overlay').forEach(m => m.addEventListener('click', e => { if(e.target===m) closeModal(m.id); }));
+
+function showToast(msg, type='info') {
+  const c = document.getElementById('toastContainer'), t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icon = type==='success'?'fa-circle-check':type==='error'?'fa-triangle-exclamation':'fa-info-circle';
+  t.innerHTML = `<i class="fa-solid ${icon}" style="color:${type==='success'?'var(--green-500)':type==='error'?'var(--red-500)':'var(--gold-400)'}"></i> ${msg}`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(100%)'; t.style.transition='all 0.3s ease'; setTimeout(()=>t.remove(),300); }, 4000);
+}
+function escHtml(s) { if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
